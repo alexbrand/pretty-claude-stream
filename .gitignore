@@ -1,0 +1,28 @@
+# Binaries
+pretty-claude-stream
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test files
+*.json
+
+# Go build artifacts
+*.test
+*.out
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Claude Code
+.claude/
