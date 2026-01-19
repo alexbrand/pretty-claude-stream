@@ -198,11 +198,56 @@ func printPrettyParams(jsonStr string) {
 		case []any:
 			fmt.Println()
 			for _, item := range v {
-				fmt.Printf("    %s-%s %s%v%s\n", Dim, Reset, Dim, item, Reset)
+				if m, ok := item.(map[string]any); ok {
+					printMapItem(m)
+				} else {
+					fmt.Printf("    %s-%s %s%v%s\n", Dim, Reset, Dim, item, Reset)
+				}
 			}
 		default:
 			out, _ := json.Marshal(v)
 			fmt.Printf("%s%s%s\n", Magenta, string(out), Reset)
 		}
 	}
+}
+
+func printMapItem(m map[string]any) {
+	// Special handling for todo items
+	if content, hasContent := m["content"]; hasContent {
+		status, _ := m["status"].(string)
+		contentStr, _ := content.(string)
+
+		var statusIcon, statusColor string
+		switch status {
+		case "completed":
+			statusIcon = "✓"
+			statusColor = Green
+		case "in_progress":
+			statusIcon = "→"
+			statusColor = Cyan
+		default:
+			statusIcon = "○"
+			statusColor = Dim
+		}
+
+		fmt.Printf("    %s%s%s %s%s%s\n", statusColor, statusIcon, Reset, statusColor, contentStr, Reset)
+		return
+	}
+
+	// Generic map formatting: show key=value pairs
+	fmt.Printf("    %s-%s ", Dim, Reset)
+	first := true
+	for k, v := range m {
+		if !first {
+			fmt.Printf("%s, %s", Dim, Reset)
+		}
+		first = false
+		switch val := v.(type) {
+		case string:
+			fmt.Printf("%s%s%s=%s%s%s", Yellow, k, Reset, Green, val, Reset)
+		default:
+			fmt.Printf("%s%s%s=%s%v%s", Yellow, k, Reset, Magenta, val, Reset)
+		}
+	}
+	fmt.Println()
 }
